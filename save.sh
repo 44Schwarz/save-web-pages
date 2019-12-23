@@ -10,20 +10,20 @@ usage() {
 }
 
 make_request() {
-	if [ "$1" == "" ]; then
+	if [ -z "$1" ]; then
 		return;
 	fi
 	full_url="$BASE_URL$1"
 	# echo $full_url
 	curl --silent -I $full_url 1>> work.log
-	if [ $? != 0 ]; then
+	if [ "$?" != 0 ]; then
 		echo "Something went wrong while fetching $1"
 	fi
 }
 
 read_file() {
 	file=$1
-	if [ -f $file ]; then
+	if [ -f "$file" ]; then
 		while IFS='' read -r line; do
 			make_request $line
 		done < $file
@@ -34,7 +34,12 @@ read_file() {
 
 }
 
-while [ "$1" != "" ]; do
+if [ -z "$1" ]; then
+	usage
+	exit
+fi
+
+while [ -n "$1" ]; do
     case $1 in
         -f | --file )           shift
                                 read_file $1
